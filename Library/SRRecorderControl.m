@@ -343,7 +343,7 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 - (NSBezierPath *)controlShape
 {
     NSRect shapeBounds = self.bounds;
-    shapeBounds.size.height = _SRControlDimensions->height - self.alignmentRectInsets.bottom;
+    shapeBounds.size.height = _SRControlDimensions->height - self.alignmentRectInsets.bottom - self.alignmentRectInsets.top;
 
     if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_9)
     {
@@ -1106,7 +1106,7 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
 - (NSEdgeInsets)alignmentRectInsets
 {
-    return NSEdgeInsetsMake(0.0, 0.0, _SRControlDimensions->bottomShadowHeight / self.backingScaleFactor, 0.0);
+    return NSEdgeInsetsMake(0.0, 0.0, _SRControlDimensions->bottomShadowHeight, 0.0);
 }
 
 - (CGFloat)baselineOffsetFromBottom
