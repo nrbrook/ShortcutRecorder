@@ -55,7 +55,7 @@
 
     if ((![self.delegate respondsToSelector:@selector(shortcutValidatorShouldCheckMenu:)] ||
          [self.delegate shortcutValidatorShouldCheckMenu:self]) &&
-        [self isKeyCode:aKeyCode andFlags:aFlags takenInMenu:[NSApp mainMenu] error:outError])
+        [self isKeyCode:aKeyCode andFlags:aFlags takenInMenu:NSApp.mainMenu error:outError])
     {
         return YES;
     }
@@ -92,7 +92,7 @@
                                          [NSString stringWithFormat:
                                          SRLoc(@"The key combination \"%@\" is already in use."),
                                          shortcut];
-
+                
                 NSDictionary *userInfo = @{
                     NSLocalizedFailureReasonErrorKey : failureReason,
                     NSLocalizedDescriptionKey: description
@@ -165,14 +165,14 @@
 {
     aFlags &= SRCocoaModifierFlagsMask;
 
-    for (NSMenuItem *menuItem in [aMenu itemArray])
+    for (NSMenuItem *menuItem in aMenu.itemArray)
     {
         if (menuItem.hasSubmenu && [self isKeyCode:aKeyCode andFlags:aFlags takenInMenu:menuItem.submenu error:outError])
             return YES;
 
         NSString *keyEquivalent = menuItem.keyEquivalent;
 
-        if (![keyEquivalent length])
+        if (!keyEquivalent.length)
             continue;
 
         NSEventModifierFlags keyEquivalentModifierMask = menuItem.keyEquivalentModifierMask;
@@ -227,7 +227,7 @@
         NSString *title = menuItem.title;
         if (title) [titles addObject:title];
     }
-
+    
     return [titles componentsJoinedByString:@" → "];
 }
 
