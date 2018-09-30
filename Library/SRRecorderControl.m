@@ -118,10 +118,35 @@ static const SRRecorderControlDimensions SRRecorderElCapitanDimensions = {
     }
 };
 
+static const SRRecorderControlDimensions SRRecorderMojaveDimensions = {
+    .shapeXRadius = 4.5,
+    .shapeYRadius = 4.5,
+    .height = 25.0,
+    .inset = 1.0,
+    .bottomShadowHeight = 1.0,
+    .clearButton = {
+        .size = {
+            .width = 14.0,
+            .height = 14.0,
+        },
+        .rightOffset = 4.0,
+        .leftOffset = 1.0,
+    },
+    .snapBackButton = {
+        .size = {
+            .width = 14.0,
+            .height = 14.0,
+        },
+        .rightOffset = 1.0,
+        .leftOffset = 3.0,
+    }
+};
+
 // TODO: see baselineOffsetFromBottom
 // static const CGFloat _SRRecorderControlBaselineOffset = 5.0;
 
 static NSImage *_SRImages[19];
+NSAppearanceName _SRLoadedAppearanceName = nil;
 static const SRRecorderControlDimensions * _SRControlDimensions;
 static NSString * _SRImageNamePrefix = nil;
 
@@ -159,9 +184,12 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
         {
             _SRImageNamePrefix = @"shortcut-recorder-yosemite-";
             _SRControlDimensions = &SRRecorderYosemiteDimensions;
-        } else {
+        } else if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_13) {
             _SRImageNamePrefix = @"shortcut-recorder-el-capitan-";
             _SRControlDimensions = &SRRecorderElCapitanDimensions;
+        } else {
+            _SRImageNamePrefix = @"shortcut-recorder-mojave-";
+            _SRControlDimensions = &SRRecorderMojaveDimensions;
         }
     }
 }
@@ -600,6 +628,26 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
         return;
 
     [NSGraphicsContext saveGraphicsState];
+    
+//    @"bezel-blue-highlighted-left", 0
+//    @"bezel-blue-highlighted-middle",
+//    @"bezel-blue-highlighted-right",
+//    @"bezel-editing-left", 3
+//    @"bezel-editing-middle",
+//    @"bezel-editing-right",
+//    @"bezel-graphite-highlight-mask-left", 6
+//    @"bezel-graphite-highlight-mask-middle",
+//    @"bezel-graphite-highlight-mask-right",
+//    @"bezel-left", 9
+//    @"bezel-middle",
+//    @"bezel-right",
+//    @"clear-highlighted", 12
+//    @"clear", 13
+//    @"snapback-highlighted", 14
+//    @"snapback", 15
+//    @"bezel-disabled-left", 16
+//    @"bezel-disabled-middle",
+//    @"bezel-disabled-right"
 
     if (self.isRecording)
     {
@@ -1043,34 +1091,45 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 - (void)viewWillDraw
 {
     [super viewWillDraw];
-
-    static dispatch_once_t OnceToken;
-    dispatch_once(&OnceToken, ^{
-        NSArray *images = @[
-                             @"bezel-blue-highlighted-left",
-                             @"bezel-blue-highlighted-middle",
-                             @"bezel-blue-highlighted-right",
-                             @"bezel-editing-left",
-                             @"bezel-editing-middle",
-                             @"bezel-editing-right",
-                             @"bezel-graphite-highlight-mask-left",
-                             @"bezel-graphite-highlight-mask-middle",
-                             @"bezel-graphite-highlight-mask-right",
-                             @"bezel-left",
-                             @"bezel-middle",
-                             @"bezel-right",
-                             @"clear-highlighted",
-                             @"clear",
-                             @"snapback-highlighted",
-                             @"snapback",
-                             @"bezel-disabled-left",
-                             @"bezel-disabled-middle",
-                             @"bezel-disabled-right"
-                             ];
-        for(NSUInteger i = 0; i < images.count; i++) {
-            _SRImages[i] = SRImage([_SRImageNamePrefix stringByAppendingString:images[i]]);
+    
+    // cannot use appearance in asset catalog because we are targetting < 10.14 so it's not supported
+    NSAppearanceName currentAppearance;
+    if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_13) {
+        currentAppearance = @"";
+    } else {
+        if (@available(macOS 10.14, *)) {
+            currentAppearance = [self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
         }
-    });
+    }
+    
+    if(![_SRLoadedAppearanceName isEqualToString:currentAppearance]) {
+        _SRLoadedAppearanceName = currentAppearance;
+        NSString *appearanceText = currentAppearance.length ? [[currentAppearance stringByReplacingOccurrencesOfString:@"NSAppearanceName" withString:@""] stringByAppendingString:@"-"] : currentAppearance;
+        NSArray *images = @[
+                            @"bezel-blue-highlighted-left",
+                            @"bezel-blue-highlighted-middle",
+                            @"bezel-blue-highlighted-right",
+                            @"bezel-editing-left",
+                            @"bezel-editing-middle",
+                            @"bezel-editing-right",
+                            @"bezel-graphite-highlight-mask-left",
+                            @"bezel-graphite-highlight-mask-middle",
+                            @"bezel-graphite-highlight-mask-right",
+                            @"bezel-left",
+                            @"bezel-middle",
+                            @"bezel-right",
+                            @"clear-highlighted",
+                            @"clear",
+                            @"snapback-highlighted",
+                            @"snapback",
+                            @"bezel-disabled-left",
+                            @"bezel-disabled-middle",
+                            @"bezel-disabled-right"
+                            ];
+        for(NSUInteger i = 0; i < images.count; i++) {
+            _SRImages[i] = SRImage([NSString stringWithFormat:@"%@%@%@", _SRImageNamePrefix, appearanceText, images[i]]);
+        }
+    }
 }
 
 - (void)drawRect:(NSRect)aDirtyRect

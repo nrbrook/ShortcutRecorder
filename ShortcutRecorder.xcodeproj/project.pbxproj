@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		01E2949A215FDD8300731CD7 /* Mojave.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01E29499215FDD8300731CD7 /* Mojave.xcassets */; };
 		0D39CBD91803EA6C0001F249 /* ShortcutRecorder.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 939837800DA42965007F53F3 /* ShortcutRecorder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		0D39CBDA1803EA6E0001F249 /* PTHotKey.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E273122E1349EC9000A84433 /* PTHotKey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		0D6B2469180304DE00CE1142 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2741AE01673C90B00A139BD /* Cocoa.framework */; };
@@ -89,6 +90,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01E29499215FDD8300731CD7 /* Mojave.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Mojave.xcassets; sourceTree = "<group>"; };
 		0B8E29C009CDB9360085E9ED /* SRRecorderControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SRRecorderControl.h; path = Library/SRRecorderControl.h; sourceTree = "<group>"; };
 		0B8E29C109CDB9360085E9ED /* SRRecorderControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SRRecorderControl.m; path = Library/SRRecorderControl.m; sourceTree = "<group>"; };
 		0B8E2A0309CDBADE0085E9ED /* PTHotKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTHotKey.h; sourceTree = "<group>"; };
@@ -318,6 +320,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				01E29499215FDD8300731CD7 /* Mojave.xcassets */,
 				27D7CFD21CE40AC500FB01C1 /* El Capitan.xcassets */,
 				BAE3063A1F80955700904E9A /* Snow Leopard.xcassets */,
 				E2741ADE1673C83800A139BD /* LICENSE.txt */,
@@ -531,6 +534,7 @@
 				E2741ADF1673C83800A139BD /* LICENSE.txt in Resources */,
 				BAE3063D1F80957700904E9A /* Yosemite.xcassets in Resources */,
 				BAE3063B1F80955700904E9A /* Snow Leopard.xcassets in Resources */,
+				01E2949A215FDD8300731CD7 /* Mojave.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
