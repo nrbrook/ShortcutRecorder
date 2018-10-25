@@ -46,30 +46,6 @@ typedef struct {
     SRRecorderButtonDimensions snapBackButton;
 } SRRecorderControlDimensions;
 
-static const SRRecorderControlDimensions SRRecorderSnowLeopardDimensions = {
-    .shapeXRadius = 11.0,
-    .shapeYRadius = 12.0,
-    .height = 25.0,
-    .inset = 1.0,
-    .bottomShadowHeight = 1.0,
-    .clearButton = {
-        .size = {
-            .width = 14.0,
-            .height = 14.0,
-        },
-        .rightOffset = 4.0,
-        .leftOffset = 1.0,
-    },
-    .snapBackButton = {
-        .size = {
-            .width = 14.0,
-            .height = 14.0,
-        },
-        .rightOffset = 1.0,
-        .leftOffset = 3.0,
-    }
-};
-
 static const SRRecorderControlDimensions SRRecorderYosemiteDimensions = {
     .shapeXRadius = 2.0,
     .shapeYRadius = 2.0,
@@ -175,12 +151,7 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
         [self exposeBinding:NSValueBinding];
         [self exposeBinding:NSEnabledBinding];
         
-        if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_9)
-        {
-            _SRImageNamePrefix = @"shortcut-recorder-snow-leopard-";
-            _SRControlDimensions = &SRRecorderSnowLeopardDimensions;
-        }
-        else if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_10)
+        if(floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_10)
         {
             _SRImageNamePrefix = @"shortcut-recorder-yosemite-";
             _SRControlDimensions = &SRRecorderYosemiteDimensions;
