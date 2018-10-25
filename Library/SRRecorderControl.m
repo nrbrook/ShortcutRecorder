@@ -121,10 +121,34 @@ static const SRRecorderControlDimensions SRRecorderMojaveDimensions = {
 // TODO: see baselineOffsetFromBottom
 // static const CGFloat _SRRecorderControlBaselineOffset = 5.0;
 
-static NSImage *_SRImages[19];
 NSAppearanceName _SRLoadedAppearanceName = nil;
 static const SRRecorderControlDimensions * _SRControlDimensions;
 static NSString * _SRImageNamePrefix = nil;
+
+typedef struct {
+    NSImage * left;
+    NSImage * middle;
+    NSImage * right;
+} SRRecorderBezelImages;
+static struct {
+    struct {
+        struct {
+            SRRecorderBezelImages blue;
+            SRRecorderBezelImages graphite;
+        } highlighted;
+        SRRecorderBezelImages normal;
+        SRRecorderBezelImages editing;
+        SRRecorderBezelImages disabled;
+    } bezel;
+    struct {
+        NSImage * normal;
+        NSImage * highlighted;
+    } clear;
+    struct {
+        NSImage * normal;
+        NSImage * highlighted;
+    } snapback;
+} _SRImages;
 
 typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 {
@@ -590,6 +614,17 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
 #pragma mark -
 
+- (void)drawImage:(SRRecorderBezelImages *)images inRect:(NSRect)rect {
+    NSDrawThreePartImage(rect,
+                         images->left,
+                         images->middle,
+                         images->right,
+                         NO,
+                         NSCompositeSourceOver,
+                         1.0,
+                         self.isFlipped);
+}
+
 - (void)drawBackground:(NSRect)aDirtyRect
 {
     NSRect frame = self.bounds;
@@ -599,37 +634,10 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
         return;
 
     [NSGraphicsContext saveGraphicsState];
-    
-//    @"bezel-blue-highlighted-left", 0
-//    @"bezel-blue-highlighted-middle",
-//    @"bezel-blue-highlighted-right",
-//    @"bezel-editing-left", 3
-//    @"bezel-editing-middle",
-//    @"bezel-editing-right",
-//    @"bezel-graphite-highlight-mask-left", 6
-//    @"bezel-graphite-highlight-mask-middle",
-//    @"bezel-graphite-highlight-mask-right",
-//    @"bezel-left", 9
-//    @"bezel-middle",
-//    @"bezel-right",
-//    @"clear-highlighted", 12
-//    @"clear", 13
-//    @"snapback-highlighted", 14
-//    @"snapback", 15
-//    @"bezel-disabled-left", 16
-//    @"bezel-disabled-middle",
-//    @"bezel-disabled-right"
 
     if (self.isRecording)
     {
-        NSDrawThreePartImage(frame,
-                             _SRImages[3],
-                             _SRImages[4],
-                             _SRImages[5],
-                             NO,
-                             NSCompositeSourceOver,
-                             1.0,
-                             self.isFlipped);
+        [self drawImage:&_SRImages.bezel.editing inRect:frame];
     }
     else
     {
@@ -637,48 +645,20 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
         {
             if ([NSColor currentControlTint] == NSBlueControlTint)
             {
-                NSDrawThreePartImage(frame,
-                                     _SRImages[0],
-                                     _SRImages[1],
-                                     _SRImages[2],
-                                     NO,
-                                     NSCompositeSourceOver,
-                                     1.0,
-                                     self.isFlipped);
+                [self drawImage:&_SRImages.bezel.highlighted.blue inRect:frame];
             }
             else
             {
-                NSDrawThreePartImage(frame,
-                                     _SRImages[6],
-                                     _SRImages[7],
-                                     _SRImages[8],
-                                     NO,
-                                     NSCompositeSourceOver,
-                                     1.0,
-                                     self.isFlipped);
+                [self drawImage:&_SRImages.bezel.highlighted.graphite inRect:frame];
             }
         }
         else if (self.enabled)
         {
-            NSDrawThreePartImage(frame,
-                                 _SRImages[9],
-                                 _SRImages[10],
-                                 _SRImages[11],
-                                 NO,
-                                 NSCompositeSourceOver,
-                                 1.0,
-                                 self.isFlipped);
+            [self drawImage:&_SRImages.bezel.normal inRect:frame];
         }
         else
         {
-            NSDrawThreePartImage(frame,
-                                 _SRImages[16],
-                                 _SRImages[17],
-                                 _SRImages[18],
-                                 NO,
-                                 NSCompositeSourceOver,
-                                 1.0,
-                                 self.isFlipped);
+            [self drawImage:&_SRImages.bezel.disabled inRect:frame];
         }
     }
 
@@ -726,14 +706,14 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
     if (self.isSnapBackButtonHighlighted)
     {
-        [_SRImages[14] drawInRect:imageRect
+        [_SRImages.snapback.highlighted drawInRect:imageRect
                          fromRect:NSZeroRect
                         operation:NSCompositeSourceOver
                          fraction:1.0];
     }
     else
     {
-        [_SRImages[15] drawInRect:imageRect
+        [_SRImages.snapback.normal drawInRect:imageRect
                          fromRect:NSZeroRect
                         operation:NSCompositeSourceOver
                          fraction:1.0];
@@ -763,14 +743,14 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
     if (self.isClearButtonHighlighted)
     {
-        [_SRImages[12] drawInRect:imageRect
+        [_SRImages.clear.highlighted drawInRect:imageRect
                          fromRect:NSZeroRect
                         operation:NSCompositeSourceOver
                          fraction:1.0];
     }
     else
     {
-        [_SRImages[13] drawInRect:imageRect
+        [_SRImages.clear.normal drawInRect:imageRect
                          fromRect:NSZeroRect
                         operation:NSCompositeSourceOver
                          fraction:1.0];
@@ -1076,30 +1056,23 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
     if(![_SRLoadedAppearanceName isEqualToString:currentAppearance]) {
         _SRLoadedAppearanceName = currentAppearance;
         NSString *appearanceText = currentAppearance.length ? [[currentAppearance stringByReplacingOccurrencesOfString:@"NSAppearanceName" withString:@""] stringByAppendingString:@"-"] : currentAppearance;
-        NSArray *images = @[
-                            @"bezel-blue-highlighted-left",
-                            @"bezel-blue-highlighted-middle",
-                            @"bezel-blue-highlighted-right",
-                            @"bezel-editing-left",
-                            @"bezel-editing-middle",
-                            @"bezel-editing-right",
-                            @"bezel-graphite-highlight-mask-left",
-                            @"bezel-graphite-highlight-mask-middle",
-                            @"bezel-graphite-highlight-mask-right",
-                            @"bezel-left",
-                            @"bezel-middle",
-                            @"bezel-right",
-                            @"clear-highlighted",
-                            @"clear",
-                            @"snapback-highlighted",
-                            @"snapback",
-                            @"bezel-disabled-left",
-                            @"bezel-disabled-middle",
-                            @"bezel-disabled-right"
-                            ];
-        for(NSUInteger i = 0; i < images.count; i++) {
-            _SRImages[i] = SRImage([NSString stringWithFormat:@"%@%@%@", _SRImageNamePrefix, appearanceText, images[i]]);
-        }
+        void(^setImage)(NSImage * __strong *, NSString *) = ^(NSImage * __strong * structPointer, NSString * imageName) {
+            *structPointer = SRImage([NSString stringWithFormat:@"%@%@%@", _SRImageNamePrefix, appearanceText, imageName]);
+        };
+        void(^setBezelImage)(SRRecorderBezelImages *, NSString *) = ^(SRRecorderBezelImages *bezelImages, NSString * prefix) {
+            setImage(&bezelImages->left, [prefix stringByAppendingString:@"-left"]);
+            setImage(&bezelImages->middle, [prefix stringByAppendingString:@"-middle"]);
+            setImage(&bezelImages->right, [prefix stringByAppendingString:@"-right"]);
+        };
+        setBezelImage(&_SRImages.bezel.highlighted.blue, @"bezel-blue-highlighted");
+        setBezelImage(&_SRImages.bezel.highlighted.graphite, @"bezel-graphite-highlighted");
+        setBezelImage(&_SRImages.bezel.normal, @"bezel");
+        setBezelImage(&_SRImages.bezel.editing, @"bezel-editing");
+        setBezelImage(&_SRImages.bezel.disabled, @"bezel-disabled");
+        setImage(&_SRImages.clear.normal, @"clear");
+        setImage(&_SRImages.clear.highlighted, @"clear-highlighted");
+        setImage(&_SRImages.snapback.normal, @"snapback");
+        setImage(&_SRImages.snapback.highlighted, @"snapback-highlighted");
     }
 }
 
