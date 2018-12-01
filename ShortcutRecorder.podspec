@@ -12,7 +12,6 @@ Pod::Spec.new do |s|
     core.source_files = 'Library/*.{h,m}'
     core.resource_bundles = { "ShortcutRecorder" => ['Resources/*.lproj', 'Resources/*.png'] }
     core.requires_arc = true
-    core.prefix_header_file = 'Library/Prefix.pch'
   end
 
   s.subspec 'PTHotKey' do |hotkey|
