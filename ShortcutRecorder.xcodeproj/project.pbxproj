@@ -737,10 +737,10 @@
 				DYLIB_CURRENT_VERSION = 2.17;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Library/Info.plist;
-				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -754,10 +754,10 @@
 				DYLIB_CURRENT_VERSION = 2.17;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Library/Info.plist;
-				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
